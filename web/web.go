@@ -37,6 +37,7 @@ import (
 
 	"google.golang.org/grpc"
 
+	"runtime/debug"
 	template_text "text/template"
 
 	"github.com/cockroachdb/cmux"
@@ -329,6 +330,13 @@ func New(logger log.Logger, o *Options) *Handler {
 
 	router.Get("/debug/*subpath", serveDebug)
 	router.Post("/debug/*subpath", serveDebug)
+
+	// force Go garbage collection and reclaim RAM
+	router.Get("/-/FreeOSMemory", func(w http.ResponseWriter, r *http.Request) {
+		debug.FreeOSMemory()
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Prometheus GC is ready, RAM was given back to OS.\n")
+	})
 
 	router.Get("/-/healthy", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)

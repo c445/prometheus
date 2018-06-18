@@ -16,7 +16,7 @@ package web
 import (
 	"fmt"
 	"net/http"
-	"sort"
+	"runtime/debug"
 
 	"github.com/go-kit/kit/log/level"
 	"github.com/gogo/protobuf/proto"
@@ -140,7 +140,7 @@ func (h *Handler) federation(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	sort.Sort(byName(vec))
+	//sort.Sort(byName(vec))
 
 	externalLabels := h.config.GlobalConfig.ExternalLabels.Clone()
 	if _, ok := externalLabels[model.InstanceLabel]; !ok {
@@ -150,7 +150,7 @@ func (h *Handler) federation(w http.ResponseWriter, req *http.Request) {
 	for ln := range externalLabels {
 		externalLabelNames = append(externalLabelNames, ln)
 	}
-	sort.Sort(externalLabelNames)
+	//sort.Sort(externalLabelNames)
 
 	var (
 		lastMetricName string
@@ -227,6 +227,7 @@ func (h *Handler) federation(w http.ResponseWriter, req *http.Request) {
 			level.Error(h.logger).Log("msg", "federation failed", "err", err)
 		}
 	}
+	debug.FreeOSMemory()
 }
 
 // byName makes a model.Vector sortable by metric name.
