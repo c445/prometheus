@@ -122,6 +122,9 @@ type Options struct {
 
 	// Disable creation and consideration of lockfile.
 	NoLockfile bool
+
+	// Disable usage of write-ahead log.
+	NoWAL bool
 }
 
 var (
@@ -185,6 +188,7 @@ func Open(path string, l log.Logger, r prometheus.Registerer, opts *Options) (*t
 		RetentionDuration: uint64(time.Duration(opts.Retention).Seconds() * 1000),
 		BlockRanges:       rngs,
 		NoLockfile:        opts.NoLockfile,
+		NoWAL:             opts.NoWAL,
 	})
 	if err != nil {
 		return nil, err

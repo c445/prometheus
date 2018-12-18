@@ -48,6 +48,7 @@ var DefaultOptions = &Options{
 	RetentionDuration: 15 * 24 * 60 * 60 * 1000, // 15 days in milliseconds
 	BlockRanges:       ExponentialBlockRanges(int64(2*time.Hour)/1e6, 3, 5),
 	NoLockfile:        false,
+	NoWAL:             false,
 }
 
 // Options of the DB storage.
@@ -63,6 +64,9 @@ type Options struct {
 
 	// NoLockfile disables creation and consideration of a lock file.
 	NoLockfile bool
+
+	// NoWAL disables usage of a write-ahead log.
+	NoWAL bool
 }
 
 // Appender allows appending a batch of data. It must be completed with a
@@ -263,10 +267,14 @@ func Open(dir string, l log.Logger, r prometheus.Registerer, opts *Options) (db 
 		return nil, errors.Wrap(err, "create leveled compactor")
 	}
 
-	wlog, err := wal.New(l, r, filepath.Join(dir, "wal"))
-	if err != nil {
-		return nil, err
+	var wlog *wal.WAL
+	if !opts.NoWAL {
+		wlog, err = wal.New(l, r, filepath.Join(dir, "wal"))
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	db.head, err = NewHead(r, l, wlog, opts.BlockRanges[0])
 	if err != nil {
 		return nil, err
