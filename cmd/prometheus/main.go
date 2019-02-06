@@ -198,6 +198,9 @@ func main() {
 	a.Flag("storage.tsdb.no-lockfile", "Do not create lockfile in data directory.").
 		Default("false").BoolVar(&cfg.tsdb.NoLockfile)
 
+	a.Flag("storage.tsdb.no-wal", "Do not use write-ahead log.").
+		Default("false").BoolVar(&cfg.tsdb.NoWAL)
+
 	a.Flag("storage.remote.flush-deadline", "How long to wait flushing sample on shutdown or config reload.").
 		Default("1m").PlaceHolder("<duration>").SetValue(&cfg.RemoteFlushDeadline)
 
@@ -391,7 +394,6 @@ func main() {
 		webHandler.ApplyConfig,
 		// The Scrape and notifier managers need to reload before the Discovery manager as
 		// they need to read the most updated config when receiving the new targets list.
-		notifierManager.ApplyConfig,
 		scrapeManager.ApplyConfig,
 		func(cfg *config.Config) error {
 			c := make(map[string]sd_config.ServiceDiscoveryConfig)
@@ -400,6 +402,7 @@ func main() {
 			}
 			return discoveryManagerScrape.ApplyConfig(c)
 		},
+		notifierManager.ApplyConfig,
 		func(cfg *config.Config) error {
 			c := make(map[string]sd_config.ServiceDiscoveryConfig)
 			for _, v := range cfg.AlertingConfig.AlertmanagerConfigs {
