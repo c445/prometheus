@@ -163,6 +163,7 @@ func configureTransport(t1 *http.Transport) (*Transport, error) {
 	connPool := new(clientConnPool)
 	t2 := &Transport{
 		ConnPool: noDialClientConnPool{connPool},
+		ReadIdleTimeout: 30*time.Second,
 		t1:       t1,
 	}
 	connPool.t = t2
