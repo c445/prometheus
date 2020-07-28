@@ -71,7 +71,6 @@ require (
 	github.com/uber/jaeger-lib v2.2.0+incompatible
 	go.mongodb.org/mongo-driver v1.3.2 // indirect
 	go.uber.org/atomic v1.6.0 // indirect
-	golang.org/x/crypto v0.0.0-20200422194213-44a606286825 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
@@ -94,4 +93,7 @@ require (
 	k8s.io/utils v0.0.0-20200414100711-2df71ebbae66 // indirect
 )
 
-replace k8s.io/klog => github.com/simonpasquier/klog-gokit v0.1.0
+replace (
+	golang.org/x/net => git.daimler.com/c445/github.com-golang-net v0.0.0-20200727153327-a07952f1a471
+	k8s.io/klog => github.com/simonpasquier/klog-gokit v0.1.0
+)
